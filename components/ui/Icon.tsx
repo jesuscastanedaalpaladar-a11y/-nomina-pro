@@ -10,6 +10,9 @@ export const Icon: React.FC<IconProps> = ({ icon: IconComponent, className, ...p
     return <IconComponent className={className} {...props} />;
 };
 
+// Default export for compatibility
+export default Icon;
+
 export const Icons = {
     dashboard: (props: React.SVGProps<SVGSVGElement>) => (
         <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">

@@ -14,6 +14,8 @@ import { AttendancePage } from './pages/AttendancePage';
 import { BonusPage } from './pages/BonusPage';
 import { ReportsPage } from './pages/ReportsPage';
 import SettingsPage from './pages/SettingsPage';
+import LoginForm from './src/components/Auth/LoginForm';
+import { useFirebase } from './src/hooks/useFirebase';
 
 export type Page = 'dashboard' | 'employees' | 'payroll' | 'attendance' | 'bonuses' | 'reports' | 'settings';
 
@@ -30,7 +32,33 @@ const App: React.FC = () => {
     const [bonusTemplates, setBonusTemplates] = useState<BonusTemplate[]>(MOCK_BONUS_TEMPLATES);
     const [users, setUsers] = useState<User[]>(Object.values(MOCK_USERS));
     const [branches, setBranches] = useState<Branch[]>(MOCK_BRANCHES);
+    
+    // Firebase integration
+    const { firebaseUser, appUser, loading, isAuthenticated } = useFirebase();
 
+    // Show loading while Firebase is initializing
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Cargando...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Show login form if not authenticated
+    if (!isAuthenticated) {
+        return <LoginForm onLoginSuccess={() => window.location.reload()} />;
+    }
+
+    // Update current user when Firebase user changes
+    useEffect(() => {
+        if (appUser) {
+            setCurrentUser(appUser);
+        }
+    }, [appUser]);
 
     useEffect(() => {
         // RLS check: When user or selection changes, ensure they have access.
